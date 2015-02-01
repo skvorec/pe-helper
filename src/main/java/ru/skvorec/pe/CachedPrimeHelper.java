@@ -24,12 +24,14 @@ public class CachedPrimeHelper {
         }
         NavigableSet<Long> candidates = primes.headSet((long) Math.sqrt(number), true);
 
+        boolean finish = false;
         for (Long prime : candidates) {
-            if (number % prime == 0) {
+            while (number % prime == 0) {
                 int current = (result.get(prime) == null) ? 0 : result.get(prime);
                 result.put(prime, current + 1);
                 number = number / prime;
                 if (number == 1) {
+                    finish = true;
                     break;
                 }
                 if (primes.contains(number)) {
@@ -37,6 +39,9 @@ public class CachedPrimeHelper {
                     result.put(number, current + 1);
                     return result;
                 }
+            }
+            if(finish){
+                break;
             }
         }
 

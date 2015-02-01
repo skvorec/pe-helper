@@ -1,12 +1,15 @@
 package ru.skvorec.pe;
 
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.NavigableSet;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import static ru.skvorec.pe.Utils.*;
 
 public class CachedPrimeHelperTest {
 
@@ -23,26 +26,22 @@ public class CachedPrimeHelperTest {
         Assert.assertEquals(primes, etalon);
     }
 
-    @Test
-    public void primeFactorization() {
+    @DataProvider
+    public Object[][] factorizations() {
+        return new Object[][]{
+                {7l, aTreeMap("7=>1")},
+                {8l, aTreeMap("2=>3")},
+                {9l, aTreeMap("3=>2")},
+                {10l, aTreeMap("2=>1,5=>1")},
+                {12l, aTreeMap("2=>2,3=>1")},
+                {32l, aTreeMap("2=>5")},
+        };
+    }
+
+    @Test(dataProvider = "factorizations")
+    public void primeFactorization(Long prime, SortedMap<Long, Integer> etalonFactors) {
         CachedPrimeHelper helper = new CachedPrimeHelper();
-        SortedMap<Long, Integer> factors = helper.primeFactorization(7);
-        SortedMap<Long, Integer> etalonMap = new TreeMap<>();
-        etalonMap.put(7l, 1);
-        Assert.assertEquals(factors, etalonMap);
-        factors = helper.primeFactorization(10);
-        etalonMap = new TreeMap<>();
-        etalonMap.put(2l, 1);
-        etalonMap.put(5l, 1);
-        Assert.assertEquals(factors, etalonMap);
-        factors = helper.primeFactorization(12);
-        etalonMap = new TreeMap<>();
-        etalonMap.put(2l, 2);
-        etalonMap.put(3l, 1);
-        Assert.assertEquals(factors, etalonMap);
-        factors = helper.primeFactorization(9);
-        etalonMap = new TreeMap<>();
-        etalonMap.put(3l, 2);
-        Assert.assertEquals(factors, etalonMap);
+        SortedMap<Long, Integer> actualFactors = helper.primeFactorization(prime);
+        Assert.assertEquals(actualFactors, etalonFactors, "For prime " + prime);
     }
 }
